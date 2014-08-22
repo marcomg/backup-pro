@@ -2,9 +2,7 @@
 
 import hashlib
 import os
-import os.path
 import shutil
-import libitunitsconversion
 
 # Generate a correct patch
 def perfectPatch(patch):
@@ -20,7 +18,7 @@ def perfectPatch(patch):
         patch = '/' + patch;
     return patch
 
-# Get recoursivly a file list
+# Get recursively a file list
 def getRecoursiveFileList(root):
     fileList = []
     for path, subdirs, files in os.walk(root):
@@ -28,7 +26,7 @@ def getRecoursiveFileList(root):
             fileList.append(os.path.join(path, file))
     return fileList
 
-# Get a listo of sizes from a list of files
+# Get a list of sizes from a list of files
 def getFileSizeList(lfiles):
     size = []
     for vfile in lfiles:
@@ -46,10 +44,9 @@ def md5Checksum(filePath):
             m.update(data)
         return m.hexdigest()
 
-# From two patches get the difference, for exaple: print(patchDiff('/home/utente/cartella/altracartella/file', '/home/utente/cartella/')) returns: 'altracartella/file'
+# From two patches get the difference, for example: print(patchDiff('/home/utente/cartella/altracartella/file', '/home/utente/cartella/')) returns: 'altracartella/file'
 def patchDiff(original, partial):
     leng = len(partial)
-    leng -= 1;
     output = original[leng:]
     return output
 
@@ -76,6 +73,7 @@ class backuppro():
     # Save the patch of the dir to backup
     def __init__(self, patch):
         self.backupPatch = patch
+        self.destinationPrefix = 'disk_' # il prefisso della destinazione dei files: disk_1, disk_2, etc
     
     # Get the file list
     def getFiles(self):
@@ -117,56 +115,42 @@ class backuppro():
     # Get the new name from the old name separated by the support size, return a list
     def getWhereCopyFiles(self, ifiles, split = False, supportSize = 0):
         files = ifiles[:]
-        # If I have to split the files
+        sizes = getFileSizeList(files)
+        finalDest = []
+        finalOrig = []
+        i = 0
         if split:
-            supportSize = libitunitsconversion.getBytes(supportSize)
-            sizes = getFileSizeList(files)
-            finalReturn = []
-            i = 0
-            while(files != []):
+            while(1):
                 i += 1
-                tmpRSize = 0 # Dimensione del gruppo temporaneo
-                tmpList = [] # Lista temporanea
-                secondWhile = 1 # Valore dei tentativi di partenza
-                whileSize = 0 # Dimensione dei dati durante il while (se il for non aggiunge niente viene interrotto)
-                # Scorro la lista
-                while(secondWhile <= 2): # Se il for qui sotto non fa nulla cambio gruppo
-                    # Controllo che il for lavori, se non lavora aumento i tentetivi per far interrompere il ciclo
-                    if(whileSize == tmpRSize):
-                        secondWhile += 1
-                    else:
-                        whileSize = tmpRSize
-                    
-                    # Scorro i file da aggiungere
-                    for tmpFile in files:
-                        idx = files.index(tmpFile)
-                        tmpSize = sizes[idx]
-                        # se i files entrano nel disco li aggiungo, altrimenti finisco il disco
-                        if((tmpRSize + tmpSize) <= supportSize):
-                            tmpRSize += tmpSize# Aggiorno la dimensione
-                            tmpList.append(files[idx])# aggiungo il percorso ad una lista temporanea
-                            
-                            # rimuovo gli item dalla lista
+                whileTmp = []
+                whileSize = 0
+                for j in [0, 1, 2, 3]:
+                    for file in files:
+                        idx = files.index(file)
+                        if (whileSize + sizes[idx]) <= supportSize:
+                            whileTmp.append(file)
+                            whileSize += sizes[idx]
                             del files[idx]
                             del sizes[idx]
-                
-                # se la lista temporanea è vuota non riesco ad inserire i files nel range
-                if(tmpList == []):
-                    print('Error some files are too big:')
-                    print(files)
+                if whileTmp == []:
+                    print('Some files are too big:')
+                    for file in files:
+                        print(' * %s' % (file))
                     exit()
-                # se non è vuota posso procedere a salvare i dati
+                elif files == []:
+                    break
                 else:
-                    for tfile in tmpList:
-                        finalReturn.append(str(i) + patchDiff(tfile, self.backupPatch))
-            return(finalReturn)
-        # If I haven't to split the files
+                    for file in whileTmp:
+                        finalDest.append(self.destinationPrefix + str(i) + '/' + patchDiff(file, self.backupPatch))
+                        finalOrig.append(file)
+            return([finalDest, finalOrig])
         else:
-            rfiles = []
-            for myfile in files:
-                # original patch, 
-                rfiles.append(str(1) + patchDiff(myfile, self.backupPatch))
-            return rfiles
+            finalDest = []
+            finalOrig = []
+            for file in files:
+                finalDest.append(self.destinationPrefix + str(1) + '/' + patchDiff(file, self.backupPatch))
+                finalOrig.append(file)
+            return([finalDest, finalOrig])
     
     # Copy a list of files to a list of destinations
     def copy(self, orig, dest):

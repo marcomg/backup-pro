@@ -2,6 +2,7 @@
 
 import argparse
 from libbackuppro import backuppro
+import libitunitsconversion
 
 # Setting arguments
 argparse = argparse.ArgumentParser(prog='backup-pro', description='A program to generate backups')
@@ -48,11 +49,12 @@ if args.split == None:
 else:
     split = True
     supportSize = str(args.split)
+    supportSize = libitunitsconversion.getBytes(supportSize)
 
-newFiles = bp.getWhereCopyFiles(toBackupFiles, split, supportSize)
+newFiles, oldfiles = bp.getWhereCopyFiles(toBackupFiles, split, supportSize)
 
 # Copy the files
-bp.copy(toBackupFiles, newFiles)
+bp.copy(oldfiles, newFiles)
 
 # Write the database
 databaseF = open('database.md5', 'w')
