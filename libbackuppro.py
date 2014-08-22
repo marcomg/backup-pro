@@ -69,7 +69,7 @@ def superCopyFile(source, output):
     shutil.copy(source, output)
 
 # Class to make backups
-class backuppro():
+class BackupPro():
     # Save the patch of the dir to backup
     def __init__(self, patch):
         self.backupPatch = patch

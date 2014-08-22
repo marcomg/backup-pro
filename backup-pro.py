@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import argparse
-from libbackuppro import backuppro
+from libbackuppro import BackupPro
 import libitunitsconversion
 
 # Setting arguments
@@ -15,7 +15,7 @@ args = argparse.parse_args()
 
 
 # Start backup
-bp = backuppro(str(args.patch))
+bp = BackupPro(str(args.patch))
 
 # Get all files
 files = bp.getFiles()
