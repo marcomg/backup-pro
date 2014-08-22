@@ -26,16 +26,10 @@ sums = bp.getSums(files)
 # If is isset and old database remove the files which have the same name and sums:
 if(args.olddatabase != None):
     olddb = bp.dbparse(args.olddatabase)
-    commonFiles = bp.getFilesInTwoListsAndSums(files, sums, olddb[0], olddb[1])
+    #commonFiles = bp.getFilesInTwoListsAndSums(files, sums, olddb[0], olddb[1])
     toBackupFiles = bp.getFilesEditedAndSums(files, sums, olddb[0], olddb[1])
     removedFiles = bp.deleteFilesOfThePreviousBackup(files, sums, olddb[0], olddb[1])
     deleteScript = bp.generateDeleteScript(removedFiles)
-    
-    # create the delete script
-    
-    ds = open('deleteScript.sh', 'w')
-    ds.write(deleteScript)
-    ds.close()
 else:
     toBackupFiles = files
 
@@ -56,8 +50,13 @@ newFiles, oldfiles = bp.getWhereCopyFiles(toBackupFiles, split, supportSize)
 # Copy the files
 bp.copy(oldfiles, newFiles)
 
+# Create the delete script
+ds = open(bp.destinationPrefix + '1/deleteScript.sh', 'w')
+ds.write(deleteScript)
+ds.close()
+
 # Write the database
-databaseF = open('database.md5', 'w')
+databaseF = open(bp.destinationPrefix + '1/database.md5', 'w')
 databaseF.write(database)
 databaseF.close()
 

@@ -74,6 +74,7 @@ class BackupPro():
     def __init__(self, patch):
         self.backupPatch = patch
         self.destinationPrefix = 'disk_' # il prefisso della destinazione dei files: disk_1, disk_2, etc
+        self.destinationSubdir = '/backup' # la sottocartella dove salvare il backup. La forma deve essere /sottocartella e non diversamente!
     
     # Get the file list
     def getFiles(self):
@@ -141,14 +142,14 @@ class BackupPro():
                     break
                 else:
                     for file in whileTmp:
-                        finalDest.append(self.destinationPrefix + str(i) + '/' + patchDiff(file, self.backupPatch))
+                        finalDest.append(self.destinationPrefix + str(i) + self.destinationSubdir + '/' + patchDiff(file, self.backupPatch))
                         finalOrig.append(file)
             return([finalDest, finalOrig])
         else:
             finalDest = []
             finalOrig = []
             for file in files:
-                finalDest.append(self.destinationPrefix + str(1) + '/' + patchDiff(file, self.backupPatch))
+                finalDest.append(self.destinationPrefix + str(1) + self.destinationSubdir + '/' + patchDiff(file, self.backupPatch))
                 finalOrig.append(file)
             return([finalDest, finalOrig])
     
@@ -159,9 +160,6 @@ class BackupPro():
             fileMakedirs(dest[i])
             superCopyFile(orig[i], dest[i])
             i += 1
-    
-    def makeIso(self):
-        pass
     
     # Get the files which are in two lists (common files)
     def getFilesInTwoListsAndSums(self, files, sums, oldfiles, oldsums):
