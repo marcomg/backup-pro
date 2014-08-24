@@ -1,4 +1,20 @@
-#!/usr/bin/python3
+########################################################################
+# This program is free software: you can redistribute it and/or modify #
+# it under the terms of the GNU General Public License as published by #
+# the Free Software Foundation, either version 3 of the License, or    #
+# (at your option) any later version.                                  #
+#                                                                      #
+# This program is distributed in the hope that it will be useful,      #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of       #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        #
+# GNU General Public License for more details.                         #
+#                                                                      #
+# You should have received a copy of the GNU General Public License    #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.#
+#                                                                      #
+# Copyright (C) 2014 by Marco Guerrini                                 #
+# Version: 1.0.0                                                       #
+########################################################################
 
 import hashlib
 import os
@@ -7,15 +23,8 @@ import shutil
 # Generate a correct patch
 def perfectPatch(patch):
     patch = str(patch)
-    if(patch[-1] == '/'):
-        pass
-    else:
-        patch = patch + '/';
-
-    if(patch[0] == '/'):
-        pass
-    else:
-        patch = '/' + patch;
+    if(patch[-1] != '/'):
+        patch += '/';
     return patch
 
 # Get recursively a file list
@@ -50,7 +59,7 @@ def patchDiff(original, partial):
     output = original[leng:]
     return output
 
-# Create direcoties of a patch
+# Create directories of a patch
 def makedirs(patch):
     patch = os.path.realpath(patch)
     if os.path.exists(patch):

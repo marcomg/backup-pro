@@ -12,7 +12,8 @@
 # You should have received a copy of the GNU General Public License    #
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.#
 #                                                                      #
-# Copyright (C) 2013 by marcomg                                        #
+# Copyright (C) 2013 by Marco Guerrini                                 #
+# Version: 0.0.1                                                       #
 ########################################################################
 
 def getUnitAndValue(inVar):
